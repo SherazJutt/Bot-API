@@ -1,24 +1,59 @@
-// Import packages
+require("dotenv").config();
+
 const express = require("express");
-const routes = require("./src/router");
 const mongoose = require("mongoose");
+const Book = require("./models/books");
 
-// Middlewares
 const app = express();
-app.use(express.json());
+const PORT = process.env.PORT || 3000;
 
-// Routes
-app.use("/", routes);
-
-// connection
-const port = process.env.PORT || 9001;
 mongoose.set("strictQuery", false);
-mongoose
-  .connect("mongodb+srv://sheraz:jutt5000@bot-api.mrqmd6w.mongodb.net/Bot-API?retryWrites=true&w=majority")
-  .then(() => {
-    console.log("connected to MongoDB");
-    app.listen(port, () => console.log(`Server Started ${port}`));
-  })
-  .catch((error) => {
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect("mongodb+srv://sheraz:jutt5000@bot-api.mrqmd6w.mongodb.net/Bot-API?retryWrites=true&w=majority");
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
     console.log(error);
+    process.exit(1);
+  }
+};
+
+//Routes go here
+app.get("/", (req, res) => {
+  res.send({ title: "Books" });
+});
+
+app.get("/books", async (req, res) => {
+  const book = await Book.find();
+
+  if (book) {
+    res.json(book);
+  } else {
+    res.send("Something went wrong.");
+  }
+});
+
+app.get("/add-note", async (req, res) => {
+  try {
+    await Book.insertMany([
+      {
+        title: "Sons Of Anarchy",
+        body: "Body text goes here...",
+      },
+      {
+        title: "Games of Thrones",
+        body: "Body text goes here...",
+      },
+    ]);
+    res.json({ Data: "Added" });
+  } catch (error) {
+    console.log("err", +error);
+  }
+});
+
+//Connect to the database before listening
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log("listening for requests at 3000");
   });
+});
