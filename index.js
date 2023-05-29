@@ -1,14 +1,14 @@
 // Import packages
 const express = require("express");
-const home = require("./routes/home");
+const routes = require("./src/router");
 
 // Middlewares
 const app = express();
 app.use(express.json());
 
 // Routes
-app.use("/home", home);
+app.use("/", routes);
 
 // connection
 const port = process.env.PORT || 9001;
-app.listen(port, () => console.log(`Listening to port ${port}`));
+app.listen(port, () => console.log(`Server Started ${port}`));
