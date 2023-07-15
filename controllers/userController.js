@@ -1,4 +1,4 @@
-const Book = require("../models/books");
+const Users = require("../models/books");
 
 const index = async (req, res) => {
   res.send("Waiting For You Request");
@@ -6,9 +6,9 @@ const index = async (req, res) => {
 // get all users
 const users = async (req, res) => {
   try {
-    const book = await Book.find();
-    if (book) {
-      res.json(book);
+    const user = await Users.find();
+    if (user) {
+      res.json(user);
     } else {
       res.send("Something went wrong.");
     }
