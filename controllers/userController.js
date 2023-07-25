@@ -1,4 +1,4 @@
-const Users = require("../models/books");
+const Users = require("../models/users");
 
 const index = async (req, res) => {
   res.send("Waiting For You Request");
