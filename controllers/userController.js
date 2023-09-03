@@ -2,16 +2,31 @@
 const loginUser = async (req, res) => {
 
   const db = req.app.locals.db;
+
   const email = req.body.email;
-  console.log(req.body);
+  const password = req.body.password;
+
   try {
+
     const existingUser = await db.collection("users").findOne({ email });
+
     if (existingUser) {
+
       let userId = existingUser.userId
       const userData = await db.collection("users-data").findOne({ userId });
-      return res.status(200).json({ success: { userinfo: existingUser, userData: userData } });
+
+      if (existingUser.email === email && existingUser.password === password) {
+        if (existingUser.isAllowed === true) {
+          return res.status(200).json({ success: { userinfo: existingUser, userData: userData } });
+        } else {
+          return res.status(401).json({ error: 'Your account has been disabled' });
+        }
+      } else {
+        return res.status(401).json({ error: 'Invalid Password' });
+      }
+
     } else {
-      return res.status(200).json({ error: 'user not found' });
+      return res.status(400).json({ error: 'user not found' });
     }
   } catch (error) {
     console.error("Error retrieving items:", error);
@@ -52,6 +67,7 @@ const addUser = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
 // delete user
 const deleteUser = async (req, res) => {
 
